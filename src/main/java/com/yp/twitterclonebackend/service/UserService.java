@@ -40,6 +40,13 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Transactional
+    public void updateUsername(Long userId, String newUsername) {
+        Optional<User> user = userRepository.findById(userId);
+        user.orElseThrow(() -> new RuntimeException("존재하지 않는 유저입니다.")).changeUsername(newUsername);
+        return;
+    }
+
     @Transactional(readOnly = true)
     public Optional<User> getUserWithAuthorities(String email) {
         return userRepository.findOneWithAuthoritiesByEmail(email);

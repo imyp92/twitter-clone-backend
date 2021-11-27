@@ -23,10 +23,11 @@ public class UserController {
         return ResponseEntity.ok(new SignupResponseDto(userService.signup(userDto)));
     }
 
-    @GetMapping("/users")
+    @PatchMapping("/users/{userId}")
     @PreAuthorize("hasAnyRole('ROLE_USER', 'ADMIN')")
-    public ResponseEntity<User> getMyUserInfo() {
-        return ResponseEntity.ok(userService.getMyUserWithAuthorities().get());
+    public ResponseEntity<String> updateDisplayName(@PathVariable Long userId, @RequestBody UserInfoUpdateDto dto) {
+        userService.updateUsername(userId, dto.getDisplayName());
+        return ResponseEntity.ok(dto.getDisplayName());
     }
 
 //    @GetMapping("/users")
