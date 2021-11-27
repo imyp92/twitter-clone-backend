@@ -1,16 +1,13 @@
 package com.yp.twitterclonebackend.jwt;
 
-import com.yp.twitterclonebackend.service.CustomUserDetailsService;
+import com.yp.twitterclonebackend.enumeration.TokenType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.*;
@@ -41,20 +38,25 @@ public class JwtFilter extends GenericFilter {
         } else {
             log.debug("유효한 액세스 토큰이 없습니다. url: {}", requestURI);
             String refreshToken = resolveToken(httpServletRequest);
-            if (refreshToken != null && tokenProvider.validateToken(refreshToken, TokenType.REFRESH_TOKEN)) {
-                String email = tokenProvider.getUserEmail(refreshToken, TokenType.REFRESH_TOKEN);
-                UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-                Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+            log.debug("refresh token={}", refreshToken);
+            if (refreshToken != null) {
+                if (tokenProvider.validateToken(refreshToken, TokenType.REFRESH_TOKEN)) {
+                    String email = tokenProvider.getUserEmail(refreshToken, TokenType.REFRESH_TOKEN);
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+                    Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                String newToken = tokenProvider.createAccessToken(authentication);
+                    String newToken = tokenProvider.createAccessToken(authentication);
+                    log.debug(newToken);
 
-                httpServletResponse.addHeader(AUTHORIZATION_HEADER, "Bearer " + newToken);
-            } else {
-                log.debug("유효한 리프레시 토큰이 없습니다.");
+                    httpServletResponse.addHeader(AUTHORIZATION_HEADER, "Bearer " + newToken);
+                } else {
+                    log.debug("유효한 리프레시 토큰이 없습니다.");
+                    httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                    return;
+                }
             }
         }
-
         chain.doFilter(request, response);
     }
 
