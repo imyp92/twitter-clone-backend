@@ -2,18 +2,14 @@ package com.yp.twitterclonebackend.controller;
 
 import com.yp.twitterclonebackend.dto.LoginRequestDto;
 import com.yp.twitterclonebackend.dto.LoginResponseDto;
-import com.yp.twitterclonebackend.dto.TokenDto;
-import com.yp.twitterclonebackend.jwt.JwtFilter;
 import com.yp.twitterclonebackend.jwt.TokenProvider;
 import com.yp.twitterclonebackend.service.CustomUser;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -36,6 +36,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         List<GrantedAuthority> grantedAuthorities = user.getAuthorities().stream()
                 .map(authority -> new SimpleGrantedAuthority(authority.getAuthorityName()))
                 .collect(Collectors.toList());
-        return new CustomUser(email, user.getPassword(), grantedAuthorities, user.getUserId(), user.getEmail());
+        return new CustomUser(email, user.getPassword(), grantedAuthorities, user.getUserId(), user.getUsername());
     }
 }

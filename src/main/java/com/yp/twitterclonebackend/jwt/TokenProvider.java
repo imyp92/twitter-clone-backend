@@ -1,19 +1,17 @@
 package com.yp.twitterclonebackend.jwt;
 
+import com.yp.twitterclonebackend.enumeration.TokenType;
 import com.yp.twitterclonebackend.service.CustomUser;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SecurityException;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -69,7 +67,7 @@ public class TokenProvider {
                 .setSubject(authentication.getName())
                 .claim("email", authentication.getName())
                 .claim("user_id", principal.getUserId())
-                .claim("name", principal.getDisplayName())
+                .claim("name", principal.getUsername())
                 .claim(AUTHORITIES_KEY, authorities)
                 .signWith(accessTokenKey)
                 .setExpiration(validity)
