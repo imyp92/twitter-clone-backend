@@ -1,7 +1,8 @@
 package com.yp.twitterclonebackend.controller;
 
+import com.yp.twitterclonebackend.dto.SignupResponseDto;
+import com.yp.twitterclonebackend.dto.UserInfoUpdateDto;
 import com.yp.twitterclonebackend.dto.UserDto;
-import com.yp.twitterclonebackend.entity.User;
 import com.yp.twitterclonebackend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +19,8 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<User> signup(@Valid @RequestBody UserDto userDto) {
-        return ResponseEntity.ok(userService.signup(userDto));
+    public ResponseEntity<SignupResponseDto> signup(@Valid @RequestBody UserDto userDto) {
+        return ResponseEntity.ok(new SignupResponseDto(userService.signup(userDto)));
     }
 
     @GetMapping("/users")
@@ -28,10 +29,17 @@ public class UserController {
         return ResponseEntity.ok(userService.getMyUserWithAuthorities().get());
     }
 
-    @GetMapping("/users/{username}")
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<User> getUserInfo(@PathVariable String username) {
-        return ResponseEntity.ok(userService.getUserWithAuthorities(username).get());
-    }
+//    @GetMapping("/users")
+//    @PreAuthorize("hasAnyRole('ROLE_USER', 'ADMIN')")
+//    public ResponseEntity<User> getMyUserInfo() {
+//        return ResponseEntity.ok(userService.getMyUserWithAuthorities().get());
+//    }
+//
+//    @GetMapping("/users/{username}")
+//    @PreAuthorize("hasAnyRole('ADMIN')")
+//    public ResponseEntity<User> getUserInfo(@PathVariable String username) {
+//        return ResponseEntity.ok(userService.getUserWithAuthorities(username).get());
+//    }
+
 
 }
