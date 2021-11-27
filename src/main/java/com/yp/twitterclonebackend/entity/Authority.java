@@ -6,11 +6,10 @@ import javax.persistence.*;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
-public class Authority {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Authority extends BaseTimeEntity {
 
     @Id
     @Column(name = "authority_name", length = 50)

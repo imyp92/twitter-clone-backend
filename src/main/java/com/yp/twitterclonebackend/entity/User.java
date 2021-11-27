@@ -6,15 +6,17 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @Getter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
-public class User {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class User extends BaseTimeEntity {
 
     @JsonIgnore
     @Id
@@ -37,6 +39,9 @@ public class User {
     @JsonIgnore
     private boolean activated;
 
+    @OneToMany(mappedBy = "user")
+    private List<Tweet> tweets = new ArrayList<>();
+
     @ManyToMany
     @JoinTable(
             name = "user_authority",
@@ -44,4 +49,8 @@ public class User {
             inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")}
     )
     private Set<Authority> authorities = new HashSet<>();
+
+    public void changeUsername(String username) {
+        this.username = username;
+    }
 }
