@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -32,11 +33,30 @@ public class TweetService {
     }
 
     @Transactional
-    public Long saveTweet(TweetDto dto, SessionUser sessionUser) {
-        if (dto.getCreatedBy() != sessionUser.getUserId()) {
+    public TweetResponseDto saveTweet(TweetRequestDto dto, SessionUser sessionUser) {
+        User createdBy = em.getReference(User.class, sessionUser.getUserId());
+        Long id = tweetRepository.save(new Tweet(dto.getText(), dto.getAttachment(), createdBy)).getId();
+        return new TweetResponseDto(id, dto.getText(), dto.getAttachment(), createdBy.getUserId());
+    }
+
+    @Transactional
+    public void deleteTweet(Long id, SessionUser sessionUser) {
+        User user = em.getReference(User.class, sessionUser.getUserId());
+        Long count = tweetRepository.deleteByIdAndUser(id, user);
+        if (count == 0) {
             throw new IllegalArgumentException();
         }
-        User createdBy = em.getReference(User.class, sessionUser.getUserId());
-        return tweetRepository.save(new Tweet(dto.getText(), dto.getAttachmentUrl(), createdBy)).getId();
+        return;
+    }
+
+    @Transactional
+    public TweetResponseDto updateTweetText(Long id, String text, SessionUser user) {
+        Optional<Tweet> result = tweetRepository.findById(id);
+        Tweet tweet = result.orElseThrow(() -> new IllegalArgumentException());
+        if (tweet.getUser().getUserId() != user.getUserId()) {
+            throw new IllegalArgumentException();
+        }
+        tweet.updateText(text);
+        return new TweetResponseDto(tweet);
     }
 }

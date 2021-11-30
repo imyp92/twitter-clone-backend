@@ -36,4 +36,8 @@ public class Tweet extends BaseTimeEntity {
         this.attachmentUrl = attachmentUrl;
         this.user = user;
     }
+
+    public void updateText(String text) {
+        this.text = text;
+    }
 }

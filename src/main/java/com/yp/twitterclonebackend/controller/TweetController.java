@@ -36,4 +36,17 @@ public class TweetController {
     public ResponseEntity<Long> sendTweet(@RequestBody TweetDto dto, @LoginUser SessionUser user) {
         return ResponseEntity.ok(tweetService.saveTweet(dto, user));
     }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @DeleteMapping("/tweets/{id}")
+    public ResponseEntity deleteTweet(@PathVariable Long id, @LoginUser SessionUser user) {
+        tweetService.deleteTweet(id, user);
+        return ResponseEntity.ok(null);
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @PatchMapping("/tweets/{id}")
+    public TweetResponseDto updateTweet(@PathVariable Long id, @RequestBody TweetUpdateDto dto, @LoginUser SessionUser user) {
+        return tweetService.updateTweetText(id, dto.getText(), user);
+    }
 }
