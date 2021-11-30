@@ -1,15 +1,10 @@
 package com.yp.twitterclonebackend.entity;
 
-import com.yp.twitterclonebackend.dto.TweetDto;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -20,20 +15,18 @@ public class Tweet extends BaseTimeEntity {
     @Column(name = "tweet_id")
     private Long id;
 
-    @NotEmpty
-    @Size(max = 120)
     private String text;
 
-    private String attachmentUrl;
+    @Column(length = 10000000)
+    private String attachment;
 
-    @NotEmpty
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Tweet(String text, String attachmentUrl, User user) {
+    public Tweet(String text, String attachment, User user) {
         this.text = text;
-        this.attachmentUrl = attachmentUrl;
+        this.attachment = attachment;
         this.user = user;
     }
 
