@@ -1,7 +1,8 @@
 package com.yp.twitterclonebackend.service;
 
 import com.yp.twitterclonebackend.dto.SessionUser;
-import com.yp.twitterclonebackend.dto.TweetDto;
+import com.yp.twitterclonebackend.dto.TweetRequestDto;
+import com.yp.twitterclonebackend.dto.TweetResponseDto;
 import com.yp.twitterclonebackend.entity.Tweet;
 import com.yp.twitterclonebackend.entity.User;
 import com.yp.twitterclonebackend.repository.TweetRepository;
@@ -25,7 +26,8 @@ public class TweetService {
     public Slice<Tweet> findTweetsSlice(Pageable pageable, Long userId) {
         Slice<Tweet> result;
         if (userId != null) {
-            result = tweetRepository.findById(pageable, userId);
+            User user = em.getReference(User.class, userId);
+            result = tweetRepository.findByUser(pageable, user);
         } else {
             result = tweetRepository.findAll(pageable);
         }
@@ -46,13 +48,12 @@ public class TweetService {
         if (count == 0) {
             throw new IllegalArgumentException();
         }
-        return;
     }
 
     @Transactional
     public TweetResponseDto updateTweetText(Long id, String text, SessionUser user) {
         Optional<Tweet> result = tweetRepository.findById(id);
-        Tweet tweet = result.orElseThrow(() -> new IllegalArgumentException());
+        Tweet tweet = result.orElseThrow(IllegalArgumentException::new);
         if (tweet.getUser().getUserId() != user.getUserId()) {
             throw new IllegalArgumentException();
         }
