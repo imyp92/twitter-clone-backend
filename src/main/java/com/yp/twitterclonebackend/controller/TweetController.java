@@ -2,11 +2,13 @@ package com.yp.twitterclonebackend.controller;
 
 import com.yp.twitterclonebackend.annotation.LoginUser;
 import com.yp.twitterclonebackend.dto.SessionUser;
-import com.yp.twitterclonebackend.dto.TweetDto;
+import com.yp.twitterclonebackend.dto.TweetRequestDto;
+import com.yp.twitterclonebackend.dto.TweetResponseDto;
+import com.yp.twitterclonebackend.dto.TweetUpdateDto;
 import com.yp.twitterclonebackend.entity.Tweet;
-import com.yp.twitterclonebackend.repository.TweetRepository;
 import com.yp.twitterclonebackend.service.TweetService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
@@ -14,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
@@ -23,18 +26,18 @@ public class TweetController {
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/tweets")
-    public Slice<TweetDto> getTweets(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "20") Integer size, @RequestParam(required = false) Long userId) {
+    public Slice<TweetResponseDto> getTweets(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "20") Integer size, @RequestParam(required = false) Long userId) {
 
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
         Slice<Tweet> slice = tweetService.findTweetsSlice(pageRequest, userId);
 
-        return slice.map(TweetDto::new);
+        return slice.map(TweetResponseDto::new);
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("/tweets")
-    public ResponseEntity<Long> sendTweet(@RequestBody TweetDto dto, @LoginUser SessionUser user) {
-        return ResponseEntity.ok(tweetService.saveTweet(dto, user));
+    public TweetResponseDto sendTweet(@RequestBody TweetRequestDto dto, @LoginUser SessionUser user) {
+        return tweetService.saveTweet(dto, user);
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
