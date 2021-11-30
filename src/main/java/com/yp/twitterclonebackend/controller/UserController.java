@@ -29,18 +29,4 @@ public class UserController {
         userService.updateUsername(userId, dto.getDisplayName());
         return ResponseEntity.ok(dto.getDisplayName());
     }
-
-//    @GetMapping("/users")
-//    @PreAuthorize("hasAnyRole('ROLE_USER', 'ADMIN')")
-//    public ResponseEntity<User> getMyUserInfo() {
-//        return ResponseEntity.ok(userService.getMyUserWithAuthorities().get());
-//    }
-//
-//    @GetMapping("/users/{username}")
-//    @PreAuthorize("hasAnyRole('ADMIN')")
-//    public ResponseEntity<User> getUserInfo(@PathVariable String username) {
-//        return ResponseEntity.ok(userService.getUserWithAuthorities(username).get());
-//    }
-
-
 }
