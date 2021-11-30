@@ -18,25 +18,20 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseTimeEntity {
 
-    @JsonIgnore
     @Id
     @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @Email
-    @NotEmpty
     @Column(unique = true)
     private String email;
 
     @Column(length = 50)
     private String username;
 
-    @JsonIgnore
     @Column(length = 100)
     private String password;
 
-    @JsonIgnore
     private boolean activated;
 
     @OneToMany(mappedBy = "user")
