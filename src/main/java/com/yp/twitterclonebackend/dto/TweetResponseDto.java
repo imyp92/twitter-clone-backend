@@ -4,22 +4,18 @@ import com.yp.twitterclonebackend.entity.Tweet;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @AllArgsConstructor
-public class TweetDto {
+public class TweetResponseDto {
     private Long id;
     private String text;
-    private String attachmentUrl;
+    private String attachment;
     private Long createdBy;
-    private LocalDateTime createdAt;
 
-    public TweetDto(Tweet tweet) {
+    public TweetResponseDto(Tweet tweet) {
         this.id = tweet.getId();
         this.text = tweet.getText();
-        this.attachmentUrl = tweet.getAttachmentUrl();
+        this.attachment = tweet.getAttachment();
         this.createdBy = tweet.getUser().getUserId();
-        this.createdAt = tweet.getCreatedDate();
     }
 }
