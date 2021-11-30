@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.util.StringUtils;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +18,7 @@ import java.io.IOException;
 
 @Slf4j
 @RequiredArgsConstructor
-public class JwtFilter extends GenericFilter {
+public class JwtFilter extends OncePerRequestFilter {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
 
@@ -25,11 +26,9 @@ public class JwtFilter extends GenericFilter {
     private final UserDetailsService userDetailsService;
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        String jwt = resolveToken(httpServletRequest);
-        String requestURI = httpServletRequest.getRequestURI();
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String jwt = resolveToken(request);
+        String requestURI = request.getRequestURI();
 
         if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt, TokenType.ACCESS_TOKEN)) {
             Authentication authentication = tokenProvider.getAuthentication(jwt);
@@ -37,7 +36,7 @@ public class JwtFilter extends GenericFilter {
             log.debug("Security Context에 '{}' 인증 정보를 저장했습니다. url: {}", authentication.getName(), requestURI);
         } else {
             log.debug("유효한 액세스 토큰이 없습니다. url: {}", requestURI);
-            String refreshToken = resolveToken(httpServletRequest);
+            String refreshToken = resolveToken(request);
             log.debug("refresh token={}", refreshToken);
             if (refreshToken != null) {
                 if (tokenProvider.validateToken(refreshToken, TokenType.REFRESH_TOKEN)) {
@@ -47,17 +46,16 @@ public class JwtFilter extends GenericFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
 
                     String newToken = tokenProvider.createAccessToken(authentication);
-                    log.debug(newToken);
 
-                    httpServletResponse.addHeader(AUTHORIZATION_HEADER, "Bearer " + newToken);
+                    response.setHeader(AUTHORIZATION_HEADER, "Bearer " + newToken);
                 } else {
                     log.debug("유효한 리프레시 토큰이 없습니다.");
-                    httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
                     return;
                 }
             }
         }
-        chain.doFilter(request, response);
+        filterChain.doFilter(request, response);
     }
 
     private String resolveToken(HttpServletRequest request) {
@@ -67,12 +65,4 @@ public class JwtFilter extends GenericFilter {
         }
         return null;
     }
-//
-//    private String resolveRefreshToken(HttpServletRequest request) {
-//        String refreshToken = request.getHeader(AUTHORIZATION_HEADER);
-//        if (StringUtils.hasText(refreshToken) && refreshToken.startsWith("Refresh ")) {
-//            return refreshToken.substring(8);
-//        }
-//        return null;
-//    }
 }
