@@ -13,7 +13,7 @@ public class TweetResponseDto {
     private Long createdBy;
 
     public TweetResponseDto(Tweet tweet) {
-        this.id = tweet.getId();
+        this.id = tweet.getTweetId();
         this.text = tweet.getText();
         this.attachment = tweet.getAttachment();
         this.createdBy = tweet.getUser().getUserId();
