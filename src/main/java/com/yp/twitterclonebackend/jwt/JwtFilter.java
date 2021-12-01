@@ -30,17 +30,16 @@ public class JwtFilter extends OncePerRequestFilter {
         String jwt = resolveToken(request);
         String requestURI = request.getRequestURI();
 
-        if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt, TokenType.ACCESS_TOKEN)) {
-            Authentication authentication = tokenProvider.getAuthentication(jwt);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.debug("Security Context에 '{}' 인증 정보를 저장했습니다. url: {}", authentication.getName(), requestURI);
-        } else {
-            log.debug("유효한 액세스 토큰이 없습니다. url: {}", requestURI);
-            String refreshToken = resolveToken(request);
-            log.debug("refresh token={}", refreshToken);
-            if (refreshToken != null) {
-                if (tokenProvider.validateToken(refreshToken, TokenType.REFRESH_TOKEN)) {
-                    String email = tokenProvider.getUserEmail(refreshToken, TokenType.REFRESH_TOKEN);
+        if (StringUtils.hasText(jwt)) {
+            if (tokenProvider.validateToken(jwt, TokenType.ACCESS_TOKEN)) {
+                Authentication authentication = tokenProvider.getAuthentication(jwt);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                log.debug("Security Context에 '{}' 인증 정보를 저장했습니다. url: {}", authentication.getName(), requestURI);
+            } else {
+                log.debug("유효한 액세스 토큰이 없습니다. url: {}", requestURI);
+                log.debug("refresh token={}", jwt);
+                if (tokenProvider.validateToken(jwt, TokenType.REFRESH_TOKEN)) {
+                    String email = tokenProvider.getUserEmail(jwt, TokenType.REFRESH_TOKEN);
                     UserDetails userDetails = userDetailsService.loadUserByUsername(email);
                     Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authentication);
