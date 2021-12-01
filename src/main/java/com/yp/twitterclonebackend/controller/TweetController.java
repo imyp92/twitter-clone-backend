@@ -16,16 +16,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/tweets")
 public class TweetController {
 
     private final TweetService tweetService;
 
     @PreAuthorize("hasRole('ROLE_USER')")
-    @GetMapping("/tweets")
+    @GetMapping
     public Slice<TweetResponseDto> getTweets(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "20") Integer size, @RequestParam(required = false) Long userId) {
 
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDate"));
@@ -35,21 +37,21 @@ public class TweetController {
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
-    @PostMapping("/tweets")
-    public TweetResponseDto sendTweet(@RequestBody TweetRequestDto dto, @LoginUser SessionUser user) {
+    @PostMapping
+    public TweetResponseDto sendTweet(@Valid @RequestBody TweetRequestDto dto, @LoginUser SessionUser user) {
         return tweetService.saveTweet(dto, user);
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
-    @DeleteMapping("/tweets/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity deleteTweet(@PathVariable Long id, @LoginUser SessionUser user) {
         tweetService.deleteTweet(id, user);
         return ResponseEntity.ok(null);
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
-    @PatchMapping("/tweets/{id}")
-    public TweetResponseDto updateTweet(@PathVariable Long id, @RequestBody TweetUpdateDto dto, @LoginUser SessionUser user) {
+    @PatchMapping("/{id}")
+    public TweetResponseDto updateTweet(@PathVariable Long id, @Valid @RequestBody TweetUpdateDto dto, @LoginUser SessionUser user) {
         return tweetService.updateTweetText(id, dto.getText(), user);
     }
 }
