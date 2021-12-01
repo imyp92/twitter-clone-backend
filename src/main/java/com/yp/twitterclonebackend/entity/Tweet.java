@@ -13,7 +13,7 @@ public class Tweet extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "tweet_id")
-    private Long id;
+    private Long tweetId;
 
     private String text;
 
