@@ -12,13 +12,13 @@ import java.util.Optional;
 
 @Repository
 public interface TweetRepository extends CrudRepository<Tweet, Long> {
-    @EntityGraph(attributePaths = "user")
+    @EntityGraph(attributePaths = {"user", "attachment"})
     Slice<Tweet> findAll(Pageable pageable);
 
-    @EntityGraph(attributePaths = "user")
-    Slice<Tweet> findById(Pageable pageable, Long userId);
+    @EntityGraph(attributePaths = {"user", "attachment"})
+    Slice<Tweet> findByUser(Pageable pageable, User user);
 
-    @EntityGraph(attributePaths = "user")
+    @EntityGraph(attributePaths = {"user", "attachment"})
     Optional<Tweet> findById(Long id);
 
     Long deleteByIdAndUser(Long id, User user);
