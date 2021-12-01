@@ -17,6 +17,7 @@ public class Tweet extends BaseTimeEntity {
 
     private String text;
 
+    @Basic(fetch = FetchType.LAZY)
     @Column(length = 10000000)
     private String attachment;
 
