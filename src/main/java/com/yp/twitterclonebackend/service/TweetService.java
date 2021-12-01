@@ -37,14 +37,14 @@ public class TweetService {
     @Transactional
     public TweetResponseDto saveTweet(TweetRequestDto dto, SessionUser sessionUser) {
         User createdBy = em.getReference(User.class, sessionUser.getUserId());
-        Long id = tweetRepository.save(new Tweet(dto.getText(), dto.getAttachment(), createdBy)).getId();
+        Long id = tweetRepository.save(new Tweet(dto.getText(), dto.getAttachment(), createdBy)).getTweetId();
         return new TweetResponseDto(id, dto.getText(), dto.getAttachment(), createdBy.getUserId());
     }
 
     @Transactional
     public void deleteTweet(Long id, SessionUser sessionUser) {
         User user = em.getReference(User.class, sessionUser.getUserId());
-        Long count = tweetRepository.deleteByIdAndUser(id, user);
+        int count = tweetRepository.deleteByIdAndUser(id, user);
         if (count == 0) {
             throw new IllegalArgumentException();
         }
