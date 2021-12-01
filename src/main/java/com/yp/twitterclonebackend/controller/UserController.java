@@ -24,7 +24,7 @@ public class UserController {
     }
 
     @PatchMapping("/users/{userId}")
-    @PreAuthorize("hasAnyRole('ROLE_USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_USER')")
     public ResponseEntity<String> updateDisplayName(@PathVariable Long userId, @RequestBody UserInfoUpdateDto dto) {
         userService.updateUsername(userId, dto.getDisplayName());
         return ResponseEntity.ok(dto.getDisplayName());

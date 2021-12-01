@@ -46,14 +46,4 @@ public class UserService {
         user.orElseThrow(() -> new RuntimeException("존재하지 않는 유저입니다.")).changeUsername(newUsername);
         return;
     }
-
-    @Transactional(readOnly = true)
-    public Optional<User> getUserWithAuthorities(String email) {
-        return userRepository.findOneWithAuthoritiesByEmail(email);
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<User> getMyUserWithAuthorities() {
-        return SecurityUtil.getCurrentUsername().flatMap(userRepository::findOneWithAuthoritiesByEmail);
-    }
 }
