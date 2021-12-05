@@ -3,6 +3,8 @@ package com.yp.twitterclonebackend.service;
 import com.yp.twitterclonebackend.dto.UserDto;
 import com.yp.twitterclonebackend.entity.Authority;
 import com.yp.twitterclonebackend.entity.User;
+import com.yp.twitterclonebackend.exception.UserEmailAlreadyExists;
+import com.yp.twitterclonebackend.exception.UserNotExistException;
 import com.yp.twitterclonebackend.repository.UserRepository;
 import com.yp.twitterclonebackend.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +23,8 @@ public class UserService {
 
     @Transactional
     public User signup(UserDto userDto) {
-        if (userRepository.findOneWithAuthoritiesByEmail(userDto.getEmail()).orElse(null) != null) {
-            throw new RuntimeException("이미 가입되어 있는 유저입니다");
+        if (userRepository.findByEmail(userDto.getEmail()).orElse(null) != null) {
+            throw new UserEmailAlreadyExists("이미 가입되어 있는 이메일입니다");
         }
 
         Authority authority = Authority.builder()
@@ -43,7 +45,6 @@ public class UserService {
     @Transactional
     public void updateUsername(Long userId, String newUsername) {
         Optional<User> user = userRepository.findById(userId);
-        user.orElseThrow(() -> new RuntimeException("존재하지 않는 유저입니다.")).changeUsername(newUsername);
-        return;
+        user.orElseThrow(() -> new UserNotExistException("존재하지 않는 사용자 정보를 수정할 수 없습니다.")).changeUsername(newUsername);
     }
 }

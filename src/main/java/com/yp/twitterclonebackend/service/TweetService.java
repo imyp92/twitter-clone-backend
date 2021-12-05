@@ -57,7 +57,7 @@ public class TweetService {
         Optional<Tweet> result = tweetRepository.findById(id);
         Tweet tweet = result.orElseThrow(IllegalArgumentException::new);
         if (tweet.getUser().getUserId() != user.getUserId()) {
-            throw new IllegalArgumentException();
+            throw new AccessNotAllowedException("직접 작성한 트윗만 수정할 수 있습니다.");
         }
         tweet.updateText(text);
         return new TweetResponseDto(tweet);

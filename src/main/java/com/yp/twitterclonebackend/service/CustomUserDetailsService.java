@@ -1,6 +1,7 @@
 package com.yp.twitterclonebackend.service;
 
 import com.yp.twitterclonebackend.entity.User;
+import com.yp.twitterclonebackend.exception.UserNotActivate;
 import com.yp.twitterclonebackend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +32,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private org.springframework.security.core.userdetails.User createUser(String email, User user) {
         if (!user.isActivated()) {
-            throw new RuntimeException(email + " -> 활성화되어 있지 않습니다.");
+            throw new UserNotActivate(email + " -> 휴면 중인 사용자입니다.");
         }
         List<GrantedAuthority> grantedAuthorities = user.getAuthorities().stream()
                 .map(authority -> new SimpleGrantedAuthority(authority.getAuthorityName()))
