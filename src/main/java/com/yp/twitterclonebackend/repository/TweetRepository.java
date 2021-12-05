@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -21,9 +22,13 @@ public interface TweetRepository extends CrudRepository<Tweet, Long> {
     @EntityGraph(attributePaths = {"user", "attachment"})
     Slice<Tweet> findByUser(Pageable pageable, User user);
 
-    @EntityGraph(attributePaths = {"user", "attachment"})
-    Optional<Tweet> findById(Long id);
+    @EntityGraph(attributePaths = {"user"})
+    Optional<Tweet> findByIdWithUser(Long id);
 
+    @EntityGraph(attributePaths = {"user", "attachment"})
+    Optional<Tweet> findByIdWithUserAndAttachment(Long id);
+
+    @Transactional
     @Modifying
     @Query("delete from Tweet t where t.id=:id and t.user=:user")
     int deleteByIdAndUser(@Param("id") Long id, @Param("user") User user);

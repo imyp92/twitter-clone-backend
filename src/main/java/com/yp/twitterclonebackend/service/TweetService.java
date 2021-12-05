@@ -5,6 +5,8 @@ import com.yp.twitterclonebackend.dto.TweetRequestDto;
 import com.yp.twitterclonebackend.dto.TweetResponseDto;
 import com.yp.twitterclonebackend.entity.Tweet;
 import com.yp.twitterclonebackend.entity.User;
+import com.yp.twitterclonebackend.exception.AccessNotAllowedException;
+import com.yp.twitterclonebackend.exception.TweetNotExistException;
 import com.yp.twitterclonebackend.repository.TweetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -43,11 +45,11 @@ public class TweetService {
 
     @Transactional
     public void deleteTweet(Long id, SessionUser sessionUser) {
-        User user = em.getReference(User.class, sessionUser.getUserId());
-        int count = tweetRepository.deleteByIdAndUser(id, user);
-        if (count == 0) {
-            throw new IllegalArgumentException();
+        Tweet tweet = tweetRepository.findByIdWithUser(id).orElseThrow(() -> new TweetNotExistException("존재하지 않는 트윗은 삭제할 수 없습니다."));
+        if (sessionUser.getUserId() != tweet.getUser().getUserId()) {
+            throw new AccessNotAllowedException("직접 작성한 트윗만 삭제할 수 있습니다.");
         }
+        tweetRepository.delete(tweet);
     }
 
     @Transactional
