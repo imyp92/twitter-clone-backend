@@ -1,10 +1,15 @@
 package com.yp.twitterclonebackend.entity;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserAuthority {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
