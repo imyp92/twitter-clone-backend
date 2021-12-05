@@ -2,8 +2,12 @@ package com.yp.twitterclonebackend.controller;
 
 import com.yp.twitterclonebackend.dto.LoginRequestDto;
 import com.yp.twitterclonebackend.dto.LoginResponseDto;
+import com.yp.twitterclonebackend.dto.SignupResponseDto;
+import com.yp.twitterclonebackend.dto.UserDto;
 import com.yp.twitterclonebackend.jwt.TokenProvider;
 import com.yp.twitterclonebackend.service.CustomUser;
+import com.yp.twitterclonebackend.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,16 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
 public class AuthController {
+    private final UserService userService;
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-
-    public AuthController(TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder) {
-        this.tokenProvider = tokenProvider;
-        this.authenticationManagerBuilder = authenticationManagerBuilder;
-    }
 
     @PostMapping("/authenticate")
     public ResponseEntity<LoginResponseDto> authorize(@Valid @RequestBody LoginRequestDto loginDto) {
@@ -42,5 +43,10 @@ public class AuthController {
 
         CustomUser principal = (CustomUser) authentication.getPrincipal();
         return new ResponseEntity<>(new LoginResponseDto(principal.getUserId(), authentication.getName(), principal.getDisplayName(), accessToken, refreshToken), HttpStatus.OK);
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<SignupResponseDto> signup(@Valid @RequestBody UserDto userDto) {
+        return ResponseEntity.ok(new SignupResponseDto(userService.signup(userDto)));
     }
 }

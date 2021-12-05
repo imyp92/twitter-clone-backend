@@ -1,5 +1,7 @@
 package com.yp.twitterclonebackend.controller;
 
+import com.yp.twitterclonebackend.annotation.LoginUser;
+import com.yp.twitterclonebackend.dto.SessionUser;
 import com.yp.twitterclonebackend.dto.SignupResponseDto;
 import com.yp.twitterclonebackend.dto.UserInfoUpdateDto;
 import com.yp.twitterclonebackend.dto.UserDto;
@@ -9,23 +11,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/signup")
-    public ResponseEntity<SignupResponseDto> signup(@Valid @RequestBody UserDto userDto) {
-        return ResponseEntity.ok(new SignupResponseDto(userService.signup(userDto)));
-    }
-
-    @PatchMapping("/users/{userId}")
+    @PatchMapping("/{userId}")
     @PreAuthorize("hasAnyRole('ROLE_USER')")
-    public ResponseEntity<String> updateDisplayName(@PathVariable Long userId, @RequestBody UserInfoUpdateDto dto) {
+    public ResponseEntity<String> updateDisplayName(@PathVariable Long userId, @RequestBody UserInfoUpdateDto dto, @LoginUser SessionUser user) {
         userService.updateUsername(userId, dto.getDisplayName());
         return ResponseEntity.ok(dto.getDisplayName());
     }
