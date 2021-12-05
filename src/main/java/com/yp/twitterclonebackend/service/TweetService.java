@@ -45,7 +45,7 @@ public class TweetService {
 
     @Transactional
     public void deleteTweet(Long id, SessionUser sessionUser) {
-        Tweet tweet = tweetRepository.findByIdWithUser(id).orElseThrow(() -> new TweetNotExistException("존재하지 않는 트윗은 삭제할 수 없습니다."));
+        Tweet tweet = tweetRepository.findOneWithUserByTweetId(id).orElseThrow(() -> new TweetNotExistException("존재하지 않는 트윗은 삭제할 수 없습니다."));
         if (sessionUser.getUserId() != tweet.getUser().getUserId()) {
             throw new AccessNotAllowedException("직접 작성한 트윗만 삭제할 수 있습니다.");
         }

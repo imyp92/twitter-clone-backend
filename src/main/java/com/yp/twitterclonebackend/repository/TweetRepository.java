@@ -23,10 +23,10 @@ public interface TweetRepository extends CrudRepository<Tweet, Long> {
     Slice<Tweet> findByUser(Pageable pageable, User user);
 
     @EntityGraph(attributePaths = {"user"})
-    Optional<Tweet> findByIdWithUser(Long id);
+    Optional<Tweet> findOneWithUserByTweetId(Long id);
 
     @EntityGraph(attributePaths = {"user", "attachment"})
-    Optional<Tweet> findByIdWithUserAndAttachment(Long id);
+    Optional<Tweet> findOneWithUserAndAttachmentByTweetId(Long id);
 
     @Transactional
     @Modifying
